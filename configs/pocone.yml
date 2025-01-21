@@ -1,0 +1,7 @@
+http:
+  server:
+    port: 8080
+log:
+  host: localhost:10514
+mongo:
+  uri: mongodb://pocone:pocone@localhost:27017/pocone?authMechanism=PLAIN

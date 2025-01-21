@@ -1,0 +1,9 @@
+{
+  "code": "ABC-123",
+  "name": "Chess Burger",
+  "description": "Classic buguer with chess.",
+  "price": {
+    "amount": 10,
+    "currency": "USD"
+  }
+}
