@@ -21,6 +21,12 @@ func setDBIndexes(collection *db.Collection) {
 			{
 				Keys: bson.D{{Key: "name", Value: -1}},
 			},
+			{
+				Keys: bson.D{{Key: "categories", Value: -1}},
+			},
+			{
+				Keys: bson.D{{Key: "is_special_offer", Value: -1}},
+			},
 		})
 }
 

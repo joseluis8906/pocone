@@ -9,6 +9,22 @@ type Money struct {
 	money.Money
 }
 
+func New(amount int64, code string) Money {
+	return Money{*money.New(amount, code)}
+}
+
+func COP(integer int64, decimal int64) Money {
+	return Money{*money.New(integer*100+decimal, money.COP)}
+}
+
+func USD(integer int64, decimal int64) Money {
+	return Money{*money.New(integer*100+decimal, money.USD)}
+}
+
+func NewFromFloat(amount float64, code string) Money {
+	return Money{*money.NewFromFloat(amount, code)}
+}
+
 func (m Money) MarshalBSON() ([]byte, error) {
 	v := struct {
 		Amount   int64

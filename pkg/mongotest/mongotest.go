@@ -23,6 +23,10 @@ func NewSingleResult(v interface{}, err error) *db.SingleResult {
 	return db.NewSingleResult(mongo.NewSingleResultFromDocument(v, err, bson.NewRegistry()))
 }
 
+func NewUpdateResult() *db.UpdateResult {
+	return db.NewUpdateResult(&mongo.UpdateResult{})
+}
+
 func NewCursor() *db.Cursor {
 	return &db.Cursor{}
 }

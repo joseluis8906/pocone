@@ -19,14 +19,16 @@ type (
 		Date     time.Time
 		Customer customer.Customer
 		Items    []Item
+		Subtotal money.Money
+		Fees     money.Money
+		Discount float64
 		Total    money.Money
 	}
 
 	Item struct {
-		Quantity int
 		Product  product.Product
+		Quantity int
 		Price    money.Money
-		Discount float64
 		Total    money.Money
 	}
 )

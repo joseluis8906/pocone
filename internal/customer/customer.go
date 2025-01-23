@@ -5,8 +5,9 @@ import (
 )
 
 type Customer struct {
-	ID      string
-	Name    string
-	Age     int
-	Address address.Address
+	ID        string
+	Name      string
+	Age       int
+	Address   address.Address
+	Favorites []string
 }

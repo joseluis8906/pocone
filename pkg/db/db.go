@@ -49,6 +49,10 @@ func NewSingleResult(s *mongo.SingleResult) *SingleResult {
 	return &SingleResult{s}
 }
 
+func NewUpdateResult(u *mongo.UpdateResult) *UpdateResult {
+	return &UpdateResult{u}
+}
+
 func New(deps Deps) *Database {
 	client, err := mongo.Connect(options.Client().ApplyURI(deps.Config.GetString("mongo.uri")))
 	if err != nil {

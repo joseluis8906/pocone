@@ -22,14 +22,28 @@ func TestCreateTask(t *testing.T) {
 	ctx := context.Background()
 	testError := errors.New("test error")
 
+	type Mongo struct {
+		Data *db.UpdateResult
+		Err  error
+	}
+
 	testCases := map[string]struct {
-		input error
+		mongo Mongo
 		want  error
 	}{
-		"no errors": {},
+		"no errors": {
+			mongo: Mongo{
+				Data: nil,
+				Err:  nil,
+			},
+			want: nil,
+		},
 		"db fails": {
-			input: testError,
-			want:  testError,
+			mongo: Mongo{
+				Data: nil,
+				Err:  testError,
+			},
+			want: testError,
 		},
 	}
 
@@ -41,7 +55,7 @@ func TestCreateTask(t *testing.T) {
 			db.DB = mDB
 
 			mCol.ReplaceOneFn = func(context.Context, interface{}, interface{}, ...options.Lister[options.ReplaceOptions]) (*db.UpdateResult, error) {
-				return nil, tc.input
+				return tc.mongo.Data, tc.mongo.Err
 			}
 
 			var task order.CreateTask
@@ -60,18 +74,20 @@ func TestCreateTask(t *testing.T) {
 func TestGetTask(t *testing.T) {
 	ctx := context.Background()
 	testError := errors.New("test error")
-
 	testID := uuid.New()
+	testDate := time.Date(2025, time.January, 21, 14, 12, 30, 0, time.UTC)
 	testOrder := order.Order{
 		ID:   testID,
-		Date: time.Date(2025, time.January, 21, 14, 12, 30, 0, time.UTC),
+		Date: testDate,
 	}
 
 	type (
 		Input struct {
-			Order order.Order
-			ReqID string
-			Err   error
+			Req *http.Request
+		}
+		Mongo struct {
+			Data bson.M
+			Err  error
 		}
 		Want struct {
 			Data []byte
@@ -81,13 +97,20 @@ func TestGetTask(t *testing.T) {
 
 	testCases := map[string]struct {
 		input Input
+		mongo Mongo
 		want  Want
 	}{
 		"success": {
 			input: Input{
-				Order: testOrder,
-				ReqID: testID.String(),
-				Err:   nil,
+				Req: func() *http.Request {
+					r := httptest.NewRequest(http.MethodGet, "/orders/"+testID.String(), nil)
+					r.SetPathValue("id", testID.String())
+					return r
+				}(),
+			},
+			mongo: Mongo{
+				Data: bson.M{"id": testID, "date": testDate},
+				Err:  nil,
 			},
 			want: Want{
 				Data: func() []byte {
@@ -99,8 +122,15 @@ func TestGetTask(t *testing.T) {
 		},
 		"wrong req param id": {
 			input: Input{
-				Order: testOrder,
-				ReqID: "wrong id format",
+				Req: func() *http.Request {
+					r := httptest.NewRequest(http.MethodGet, "/orders/"+testID.String(), nil)
+					r.SetPathValue("id", "abc-123")
+					return r
+				}(),
+			},
+			mongo: Mongo{
+				Data: bson.M{},
+				Err:  nil,
 			},
 			want: Want{
 				Data: nil,
@@ -109,9 +139,15 @@ func TestGetTask(t *testing.T) {
 		},
 		"db fails": {
 			input: Input{
-				Order: testOrder,
-				ReqID: testID.String(),
-				Err:   testError,
+				Req: func() *http.Request {
+					r := httptest.NewRequest(http.MethodGet, "/orders/"+testID.String(), nil)
+					r.SetPathValue("id", testID.String())
+					return r
+				}(),
+			},
+			mongo: Mongo{
+				Data: bson.M{},
+				Err:  testError,
 			},
 			want: Want{
 				Data: nil,
@@ -127,30 +163,16 @@ func TestGetTask(t *testing.T) {
 			db.DB = mongotest.New(mCol)
 
 			mCol.FindOneFn = func(context.Context, interface{}, ...options.Lister[options.FindOneOptions]) *db.SingleResult {
-				record := bson.M{
-					"id":   tc.input.Order.ID,
-					"date": tc.input.Order.Date,
-				}
-
-				return mongotest.NewSingleResult(record, tc.input.Err)
+				return mongotest.NewSingleResult(tc.mongo.Data, tc.mongo.Err)
 			}
 
-			req := httptest.NewRequest(http.MethodGet, "/orders/"+tc.input.Order.ID.String(), nil)
-			req.SetPathValue("id", tc.input.ReqID)
-
 			var task order.GetTask
-			task.ExtractID(req)
+			task.ExtractID(tc.input.Req)
 			task.SearchTheDB(ctx)
 			task.Encode()
 
 			got, err := task.Result()
-
-			var want []byte
-			if err == nil {
-				want, _ = json.Marshal(tc.input.Order)
-			}
-
-			if diff := cmp.Diff(want, got); (err != nil && !tc.want.Err) || diff != "" {
+			if diff := cmp.Diff(tc.want.Data, got); (err != nil && !tc.want.Err) || diff != "" {
 				t.Errorf("order.GetTask() = %s, %v; want %s, %v\n(-want, +got)\n%s", got, err, tc.want.Data, testError, diff)
 			}
 		})
