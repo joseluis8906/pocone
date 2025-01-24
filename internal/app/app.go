@@ -7,48 +7,51 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/joseluis8906/pocone/internal/order"
+	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/joseluis8906/pocone/internal/product"
 	"github.com/joseluis8906/pocone/pkg/log"
+	"github.com/rs/cors"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
 
 type Deps struct {
 	fx.In
-	Config        *viper.Viper
-	Router        *http.ServeMux
-	Log           *stdlog.Logger
-	OrderRouter   *order.Router
-	ProductRouter *product.Router
+	Config   *viper.Viper
+	Log      *stdlog.Logger
+	Products *product.RpcService
 }
 
-func New(lc fx.Lifecycle, deps Deps) *http.Server {
+type Server struct{}
+
+func New(lc fx.Lifecycle, deps Deps) *Server {
+	rpcSrv := rpc.NewServer()
+	rpcSrv.RegisterName("products", deps.Products)
+
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", deps.Config.GetInt("http.server.port")),
-		Handler: deps.Router,
+		Handler: cors.Default().Handler(rpcSrv),
 	}
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			ln, err := net.Listen("tcp", srv.Addr)
+			l, err := net.Listen("tcp", srv.Addr)
 			if err != nil {
 				log.Fatalf("%s creating server bind: %v", log.Error, err)
 			}
 
-			log.Printf("%s http server listening on: %s", log.Info, srv.Addr)
-			go srv.Serve(ln)
+			log.Printf("%s http server listening on %s", log.Info, srv.Addr)
+			go srv.Serve(l)
 
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			srv.Shutdown(ctx)
-
+			srv.Shutdown(context.Background())
 			return nil
 		},
 	})
 
-	return srv
+	return &Server{}
 }
 
 func NewRouter() *http.ServeMux {

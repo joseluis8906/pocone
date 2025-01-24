@@ -7,7 +7,7 @@ import (
 	"github.com/joseluis8906/pocone/pkg/money"
 )
 
-func TestCalcDiscount(t *testing.T) {
+func PriceBeforeDiscount(t *testing.T) {
 	testCases := map[string]struct {
 		input product.Product
 		want  money.Money
@@ -45,7 +45,7 @@ func TestCalcDiscount(t *testing.T) {
 	for name, tc := range testCases {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
-			got := product.OriginalPrice(tc.input)
+			got := product.PriceBeforeDiscount(tc.input)
 			if tc.want.Amount() != got.Amount() {
 				t.Errorf("want = %v; got = %v", tc.want.Amount(), got.Amount())
 			}
