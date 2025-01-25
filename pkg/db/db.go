@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 
 	"github.com/joseluis8906/pocone/pkg/log"
 	"github.com/spf13/viper"
@@ -132,14 +133,36 @@ func (c *Collection) QueryMulti(ctx context.Context, criteria Criteria, v interf
 	return cur.All(ctx, v)
 }
 
-func Persist(ctx context.Context, criteria Criteria, v interface{}) error {
-	return DB.Collection(criteria.Collection).Persist(ctx, criteria, v)
+type Result[T any] struct {
+	data []T
+	err  error
 }
 
-func QuerySingle(ctx context.Context, criteria Criteria, v interface{}) error {
-	return DB.Collection(criteria.Collection).QuerySingle(ctx, criteria, v)
+func NewResult[T any](data []T, err error) Result[T] {
+	return Result[T]{data, err}
 }
 
-func QueryMulti(ctx context.Context, criteria Criteria, v interface{}) error {
-	return DB.Collection(criteria.Collection).QueryMulti(ctx, criteria, v)
+func (r Result[T]) ExpectOne() (*T, error) {
+	if r.err != nil {
+		return nil, r.err
+	}
+
+	if len(r.data) != 1 {
+		return nil, errors.New("result length different to one")
+	}
+
+	v := r.data[0]
+	return &v, nil
+}
+
+func (r Result[T]) ExpectMany() ([]T, error) {
+	if len(r.data) == 0 {
+		return nil, errors.New("empty result")
+	}
+
+	return r.data, nil
+}
+
+func (r Result[T]) All() ([]T, error) {
+	return r.data, nil
 }

@@ -1,21 +1,21 @@
 {
   "jsonrpc": "2.0",
-  "method": "products_add",
+  "method": "product_add",
   "params": [
     {
-      "code": "ABC-123",
-      "name": "Chess Burger",
-      "Image": "https://as2.ftcdn.net/v2/jpg/07/48/61/79/1000_F_748617901_jMmFmSpbHJxZTk9fnRyYxZQ2nUEQlLvp.jpg",
-      "description": "Classic buguer with chess.",
+      "code": "DEF-456",
+      "name": "Chicken Salad",
+      "Image": "https://media.gettyimages.com/id/1491355712/es/foto/ensaladera-de-pollo-saludable.jpg?s=612x612&w=gi&k=20&c=W09pH3_SxjPj3K0feJdl3LLMh1sfrkkwBhKGKMoYrMc=",
+      "description": "Chicken Cesar Salad.",
       "price": {
-        "amount": 7.55,
+        "amount": 8.25,
         "currency": "USD"
       },
       "categories": [
         "meals",
-        "fast food"
+        "pasta"
       ],
-      "specialOffer": true,
+      "specialOffer": false,
       "popularNow": true
     }
   ],

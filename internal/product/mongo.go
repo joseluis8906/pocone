@@ -39,16 +39,22 @@ type Repository struct {
 	db *db.Collection
 }
 
-func (r *Repository) persist(ctx context.Context, p Product) error {
+func NewRepository(deps Deps) *Repository {
+	return &Repository{db: deps.DB.Collection(collection)}
+}
+
+func (r *Repository) Persist(ctx context.Context, p *Product) error {
 	filter := bson.D{{Key: "code", Value: p.Code}}
 	opts := options.Replace().SetUpsert(true)
 
-	_, err := db.DB.Collection(collection).ReplaceOne(ctx, filter, p, opts)
+	if _, err := r.db.ReplaceOne(ctx, filter, p, opts); err != nil {
+		return fmt.Errorf("calling replaceOne: %w", err)
+	}
 
-	return err
+	return nil
 }
 
-func (r *Repository) query(ctx context.Context, p Product) (res []Product, err error) {
+func (r *Repository) Query(ctx context.Context, p Product) db.Result[Product] {
 	criteria := db.Criteria{
 		Collection: collection,
 	}
@@ -73,13 +79,14 @@ func (r *Repository) query(ctx context.Context, p Product) (res []Product, err e
 	}
 
 	if len(filter) == 0 {
-		return nil, errors.New("empty filter")
+		return db.NewResult[Product](nil, errors.New("empty filter"))
 	}
 
 	criteria.Filter = filter
-	if err = db.QueryMulti(ctx, criteria, &res); err != nil {
-		return nil, fmt.Errorf("quering mongo: %w", err)
+	var res []Product
+	if err := r.db.QueryMulti(ctx, criteria, &res); err != nil {
+		return db.NewResult[Product](nil, fmt.Errorf("finding many documents: %w", err))
 	}
 
-	return res, nil
+	return db.NewResult(res, nil)
 }

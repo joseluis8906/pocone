@@ -14,10 +14,11 @@ type (
 )
 
 func (s *RpcService) Get(req *Product) ([]Product, error) {
-	products, err := s.Repository.query(context.Background(), *req)
+	products, err := s.Repository.Query(context.Background(), *req).All()
 	if err != nil {
-		log.Printf("%s getting products: %v", log.Error, err)
-		return nil, fmt.Errorf("getting products: %w", err)
+		err := fmt.Errorf("getting products: %w", err)
+		log.Printf("%s %v", log.Error, err)
+		return nil, err
 	}
 
 	return products, nil

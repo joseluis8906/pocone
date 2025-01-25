@@ -17,20 +17,20 @@ import (
 
 type Deps struct {
 	fx.In
-	Config   *viper.Viper
-	Log      *stdlog.Logger
-	Products *product.RpcService
+	Config    *viper.Viper
+	Log       *stdlog.Logger
+	RpcServer *rpc.Server
+	Products  *product.RpcService
 }
 
-type Server struct{}
+func NewRpcServer() *rpc.Server {
+	return rpc.NewServer()
+}
 
-func New(lc fx.Lifecycle, deps Deps) *Server {
-	rpcSrv := rpc.NewServer()
-	rpcSrv.RegisterName("products", deps.Products)
-
+func New(lc fx.Lifecycle, deps Deps) *http.Server {
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", deps.Config.GetInt("http.server.port")),
-		Handler: cors.Default().Handler(rpcSrv),
+		Handler: cors.Default().Handler(deps.RpcServer),
 	}
 
 	lc.Append(fx.Hook{
@@ -51,7 +51,7 @@ func New(lc fx.Lifecycle, deps Deps) *Server {
 		},
 	})
 
-	return &Server{}
+	return srv
 }
 
 func NewRouter() *http.ServeMux {

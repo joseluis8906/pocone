@@ -1,7 +1,11 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/joseluis8906/pocone/internal/app"
+	"github.com/joseluis8906/pocone/internal/customer"
+	"github.com/joseluis8906/pocone/internal/order"
 	"github.com/joseluis8906/pocone/internal/product"
 	"github.com/joseluis8906/pocone/pkg/config"
 	"github.com/joseluis8906/pocone/pkg/db"
@@ -15,9 +19,12 @@ func main() {
 		fx.Provide(log.New),
 		fx.Provide(db.New),
 
+		fx.Options(customer.Module),
 		fx.Options(product.Module),
+		fx.Options(order.Module),
 
+		fx.Provide(app.NewRpcServer),
 		fx.Provide(app.New),
-		fx.Invoke(func(*app.Server) {}),
+		fx.Invoke(func(*http.Server) {}),
 	).Run()
 }

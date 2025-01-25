@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/joseluis8906/pocone/pkg/db"
@@ -25,20 +26,33 @@ func setDBindexes(collection *db.Collection) {
 		})
 }
 
-func persistOnDB(ctx context.Context, od Order) error {
+type Repository struct {
+	db *db.Collection
+}
+
+func NewRepository(deps Deps) *Repository {
+	return &Repository{db: deps.DB.Collection(collection)}
+}
+
+func (r *Repository) Persist(ctx context.Context, od Order) error {
 	criteria := db.Criteria{
 		Collection: collection,
 		Filter:     bson.D{{Key: "id", Value: od.ID}},
 	}
 
-	return db.Persist(ctx, criteria, od)
+	return r.db.Persist(ctx, criteria, od)
 }
 
-func queryByID(ctx context.Context, id uuid.UUID) (od Order, err error) {
+func (r *Repository) Query(ctx context.Context, id uuid.UUID) db.Result[Order] {
 	criteria := db.Criteria{
 		Collection: collection,
 		Filter:     bson.D{{Key: "id", Value: id}},
 	}
 
-	return od, db.QuerySingle(ctx, criteria, &od)
+	var res []Order
+	if err := r.db.QueryMulti(ctx, criteria, &res); err != nil {
+		return db.NewResult[Order](nil, fmt.Errorf("finding many documents: %w", err))
+	}
+
+	return db.NewResult(res, nil)
 }

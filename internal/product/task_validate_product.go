@@ -3,6 +3,7 @@ package product
 import (
 	"errors"
 	"fmt"
+	"slices"
 )
 
 type validateProduct struct {
@@ -46,7 +47,7 @@ func (v *validateProduct) CheckPrice() {
 	}
 
 	if v.p.Price.IsZero() || v.p.Price.IsNegative() {
-		v.err = fmt.Errorf("price %s is not valid", v.p.Price.Display())
+		v.err = fmt.Errorf("price %s is not allowed", v.p.Price.Display())
 	}
 }
 
@@ -65,8 +66,13 @@ func (v *validateProduct) CheckCategories() {
 		return
 	}
 
+	if len(v.p.Categories) == 0 {
+		v.err = errors.New("categories are empty")
+		return
+	}
+
 	for _, c := range v.p.Categories {
-		if _, ok := validCategories[c]; !ok {
+		if slices.Contains(validCategories, c) {
 			v.err = fmt.Errorf("%s is not an allowed category", c)
 			break
 		}

@@ -16,17 +16,25 @@ type Product struct {
 	PopularNow   bool
 }
 
+func applyDiscount(p Product) Product {
+	amount := float64(p.Price.Amount()) / 100
+	x := amount - (amount * (p.Discount / 100))
+	p.Price = money.NewFromFloat(x, p.Price.Currency().Code)
+	return p
+}
+
 func PriceBeforeDiscount(p Product) money.Money {
 	amount := float64(p.Price.Amount()) / 100
 	x := amount / (1 - (p.Discount / 100))
 	return money.NewFromFloat(x, p.Code)
 }
 
-var validCategories = map[string]struct{}{
-	"meals":     {},
-	"healthy":   {},
-	"drinks":    {},
-	"sides":     {},
-	"snacks":    {},
-	"fast food": {},
+var validCategories = []string{
+	"meals",
+	"drinks",
+	"pasta",
+	"healthy",
+	"salads",
+	"snacks",
+	"fast food",
 }

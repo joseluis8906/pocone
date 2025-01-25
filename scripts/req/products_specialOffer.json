@@ -1,0 +1,6 @@
+{
+  "jsonrpc": "2.0",
+  "method": "product_specialOffer",
+  "params": [],
+  "id": 1
+}
