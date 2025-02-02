@@ -34,7 +34,7 @@ func NewRepository(deps Deps) *Repository {
 	return &Repository{db: deps.DB.Collection(collection)}
 }
 
-func (r *Repository) Persist(ctx context.Context, od Order) error {
+func (r *Repository) Persist(ctx context.Context, od *Order) error {
 	criteria := db.Criteria{
 		Collection: collection,
 		Filter:     bson.D{{Key: "id", Value: od.ID}},

@@ -43,6 +43,11 @@ func toFloat(m Money) float64 {
 	return float64(m.Amount()) / 100.0
 }
 
+func (m *Money) Times(qty int) Money {
+	v := m.Multiply(int64(qty))
+	return Money{*v}
+}
+
 func (m *Money) UnmarshalJSON(data []byte) error {
 	var raw struct {
 		Amount   float64
@@ -87,4 +92,9 @@ func (m *Money) UnmarshalBSON(data []byte) error {
 	m.Money = *v
 
 	return nil
+}
+
+func Add(a, b Money) Money {
+	v, _ := a.Add(&b.Money)
+	return Money{*v}
 }

@@ -1,0 +1,6 @@
+{
+  "jsonrpc": "2.0",
+  "method": "product_popularNow",
+  "params": [],
+  "id": 1
+}

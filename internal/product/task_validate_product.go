@@ -72,7 +72,7 @@ func (v *validateProduct) CheckCategories() {
 	}
 
 	for _, c := range v.p.Categories {
-		if slices.Contains(validCategories, c) {
+		if !slices.Contains(validCategories, c) {
 			v.err = fmt.Errorf("%s is not an allowed category", c)
 			break
 		}

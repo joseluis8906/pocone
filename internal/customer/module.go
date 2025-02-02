@@ -23,7 +23,7 @@ func NewRpcService(deps Deps) *RpcService {
 	setDBIndexes(deps.DB.Collection(collection))
 
 	srv := &RpcService{
-		Repository: &Repository{
+		CustomerRepo: &Repository{
 			db: deps.DB.Collection(collection),
 		},
 	}

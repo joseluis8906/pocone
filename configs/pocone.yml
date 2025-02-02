@@ -4,4 +4,5 @@ http:
 log:
   host: localhost:10514
 mongo:
-  uri: mongodb://pocone:pocone@localhost:27017/pocone?authMechanism=PLAIN
+  uri: mongodb://development:development@localhost:27017/development?authMechanism=PLAIN
+currency: USD

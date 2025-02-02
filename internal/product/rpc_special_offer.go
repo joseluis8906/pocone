@@ -8,7 +8,7 @@ import (
 	"github.com/joseluis8906/pocone/pkg/slices"
 )
 
-func (s *RpcService) SpecialOffer() ([]Product, error) {
+func (s *RpcService) SpecialOffer(ctx context.Context) ([]Product, error) {
 	products, err := s.Repository.Query(context.Background(), Product{SpecialOffer: true}).All()
 	if err != nil {
 		err := fmt.Errorf("getting special offer: %w", err)
@@ -16,5 +16,5 @@ func (s *RpcService) SpecialOffer() ([]Product, error) {
 		return nil, err
 	}
 
-	return slices.Map(products, applyDiscount), nil
+	return slices.Map(products, ApplyDiscount), nil
 }

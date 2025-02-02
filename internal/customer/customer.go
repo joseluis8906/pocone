@@ -9,6 +9,6 @@ type Customer struct {
 	ID        uuid.UUID
 	Name      string
 	Age       int
-	Address   address.Address
+	Address   []address.Address
 	Favorites []string
 }

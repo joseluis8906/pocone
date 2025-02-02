@@ -8,10 +8,8 @@ import (
 	"github.com/joseluis8906/pocone/internal/product"
 )
 
-func (s *RpcService) AddFavorite(id uuid.UUID, code string) error {
-	ctx := context.Background()
-
-	c, err := s.Repository.Query(ctx, Customer{ID: id}).ExpectOne()
+func (s *RpcService) AddFavorite(ctx context.Context, id uuid.UUID, code string) error {
+	c, err := s.CustomerRepo.Query(ctx, Customer{ID: id}).ExpectOne()
 	if err != nil {
 		return fmt.Errorf("quering customer repository: %w", err)
 	}
@@ -22,7 +20,7 @@ func (s *RpcService) AddFavorite(id uuid.UUID, code string) error {
 	}
 
 	c.Favorites = append(c.Favorites, p.Code)
-	if err := s.Repository.Persist(ctx, c); err != nil {
+	if err := s.CustomerRepo.Persist(ctx, c); err != nil {
 		return fmt.Errorf("persisting customer: %w", err)
 	}
 

@@ -1,0 +1,6 @@
+{
+  "jsonrpc": "2.0",
+  "method": "order_new",
+  "params": [],
+  "id": 1
+}

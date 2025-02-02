@@ -7,7 +7,7 @@ import (
 	"github.com/joseluis8906/pocone/pkg/log"
 )
 
-func (s *RpcService) Add(req *Product) error {
+func (s *RpcService) Add(ctx context.Context, req *Product) error {
 	task := validateProduct{p: *req}
 	task.CheckCode()
 	task.CheckName()

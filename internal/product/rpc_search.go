@@ -7,7 +7,7 @@ import (
 	"github.com/joseluis8906/pocone/pkg/log"
 )
 
-func (s *RpcService) Search(req Product) ([]Product, error) {
+func (s *RpcService) Search(ctx context.Context, req Product) ([]Product, error) {
 	products, err := s.Repository.Query(context.Background(), req).All()
 	if err != nil {
 		err := fmt.Errorf("getting products: %w", err)

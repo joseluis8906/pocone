@@ -8,3 +8,7 @@ func Map[T any, U any](slice []T, fn func(T) U) []U {
 
 	return res
 }
+
+func Splice[T any](slice []T, s int) []T {
+	return append(slice[:s], slice[s+1:]...)
+}

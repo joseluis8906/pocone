@@ -7,7 +7,7 @@ import (
 	"github.com/joseluis8906/pocone/pkg/log"
 )
 
-func (s *RpcService) PopularNow() ([]Product, error) {
+func (s *RpcService) PopularNow(ctx context.Context) ([]Product, error) {
 	products, err := s.Repository.Query(context.Background(), Product{PopularNow: true}).All()
 	if err != nil {
 		err := fmt.Errorf("getting special offer: %w", err)

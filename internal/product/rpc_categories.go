@@ -1,5 +1,7 @@
 package product
 
-func (s *RpcService) Categories() ([]string, error) {
+import "context"
+
+func (s *RpcService) Categories(ctx context.Context) ([]string, error) {
 	return validCategories, nil
 }

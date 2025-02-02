@@ -1,0 +1,10 @@
+{
+  "jsonrpc": "2.0",
+  "method": "product_search",
+  "params": [
+    {
+      "name": "Lasagna"
+    }
+  ],
+  "id": 1
+}

@@ -1,0 +1,24 @@
+{
+  "jsonrpc": "2.0",
+  "method": "product_add",
+  "params": [
+    {
+      "code": "DEF-345",
+      "name": "Lasagna",
+      "Image": "https://imgs.search.brave.com/hVoCEQjOng3VioyJ4bihibyMBEEh8Ac6Cs2SxJCaf0M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTU3/NjE1OTkwL3Bob3Rv/L2xhc2FnbmEuanBn/P3M9NjEyeDYxMiZ3/PTAmaz0yMCZjPWY4/bzdkeWdQT2dGUG52/azh3S3REVzJRZ21C/cEFDTU5QRlJRdG03/eDB1N1U9",
+      "description": "Italian classic lasagna.",
+      "price": {
+        "amount": 9.57,
+        "currency": "USD"
+      },
+      "categories": [
+        "meals",
+        "fast food"
+      ],
+      "specialOffer": false,
+      "discount": 0,
+      "popularNow": true
+    }
+  ],
+  "id": 1
+}
