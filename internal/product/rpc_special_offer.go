@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/joseluis8906/pocone/pkg/log"
+	"github.com/joseluis8906/pocone/pkg/slices"
 )
 
 func (s *RpcService) SpecialOffer() ([]Product, error) {
@@ -15,11 +16,5 @@ func (s *RpcService) SpecialOffer() ([]Product, error) {
 		return nil, err
 	}
 
-	specialOffer := make([]Product, len(products))
-	for i, p := range products {
-		p := applyDiscount(p)
-		specialOffer[i] = p
-	}
-
-	return specialOffer, nil
+	return slices.Map(products, applyDiscount), nil
 }
