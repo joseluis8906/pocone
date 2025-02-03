@@ -11,4 +11,10 @@ type Customer struct {
 	Age       int
 	Address   []address.Address
 	Favorites []string
+	Scores    []Score
+}
+
+type Score struct {
+	Product string
+	Score   float32
 }

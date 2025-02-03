@@ -3,6 +3,7 @@ package order
 import (
 	"github.com/joseluis8906/pocone/internal/customer"
 	"github.com/joseluis8906/pocone/internal/product"
+	"github.com/joseluis8906/pocone/pkg/payu"
 	"github.com/spf13/viper"
 )
 
@@ -11,4 +12,5 @@ type RpcService struct {
 	OrderRepo    *Repository
 	ProductRepo  *product.Repository
 	CustomerRepo *customer.Repository
+	PayuGW       *payu.Gateway
 }
