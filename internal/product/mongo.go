@@ -5,17 +5,17 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/joseluis8906/pocone/pkg/db"
+	"github.com/joseluis8906/pocone/pkg/mongo"
 	"go.mongodb.org/mongo-driver/v2/bson"
-	"go.mongodb.org/mongo-driver/v2/mongo"
+	stdmongo "go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 const collection = "products"
 
-func setDBIndexes(collection *db.Collection) {
+func setDBIndexes(collection *mongo.Collection) {
 	collection.Indexes().
-		CreateMany(context.Background(), []mongo.IndexModel{
+		CreateMany(context.Background(), []stdmongo.IndexModel{
 			{
 				Keys:    bson.D{{Key: "code", Value: -1}},
 				Options: options.Index().SetUnique(true),
@@ -36,7 +36,7 @@ func setDBIndexes(collection *db.Collection) {
 }
 
 type Repository struct {
-	db *db.Collection
+	db *mongo.Collection
 }
 
 func NewRepository(deps Deps) *Repository {
@@ -54,8 +54,8 @@ func (r *Repository) Persist(ctx context.Context, p *Product) error {
 	return nil
 }
 
-func (r *Repository) Query(ctx context.Context, p Product) db.Result[Product] {
-	criteria := db.Criteria{
+func (r *Repository) Query(ctx context.Context, p Product) mongo.Result[Product] {
+	criteria := mongo.Criteria{
 		Collection: collection,
 	}
 
@@ -79,14 +79,14 @@ func (r *Repository) Query(ctx context.Context, p Product) db.Result[Product] {
 	}
 
 	if len(filter) == 0 {
-		return db.NewResult[Product](nil, errors.New("empty filter"))
+		return mongo.NewResult[Product](nil, errors.New("empty filter"))
 	}
 
 	criteria.Filter = filter
 	var res []Product
 	if err := r.db.QueryMulti(ctx, criteria, &res); err != nil {
-		return db.NewResult[Product](nil, fmt.Errorf("finding many documents: %w", err))
+		return mongo.NewResult[Product](nil, fmt.Errorf("finding many documents: %w", err))
 	}
 
-	return db.NewResult(res, nil)
+	return mongo.NewResult(res, nil)
 }

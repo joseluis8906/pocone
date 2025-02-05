@@ -2,7 +2,7 @@ package customer
 
 import (
 	"github.com/ethereum/go-ethereum/rpc"
-	"github.com/joseluis8906/pocone/pkg/db"
+	"github.com/joseluis8906/pocone/pkg/mongo"
 	"go.uber.org/fx"
 )
 
@@ -14,7 +14,7 @@ var Module = fx.Provide(
 type (
 	Deps struct {
 		fx.In
-		DB        *db.Database
+		DB        *mongo.Database
 		RpcServer *rpc.Server
 	}
 )

@@ -2,7 +2,7 @@ package order
 
 import (
 	"github.com/ethereum/go-ethereum/rpc"
-	"github.com/joseluis8906/pocone/pkg/db"
+	"github.com/joseluis8906/pocone/pkg/mongo"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
@@ -16,7 +16,7 @@ type (
 	Deps struct {
 		fx.In
 		Conf      *viper.Viper
-		DB        *db.Database
+		DB        *mongo.Database
 		RpcServer *rpc.Server
 	}
 )

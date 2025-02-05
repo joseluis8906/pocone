@@ -43,3 +43,11 @@ func New(deps Deps) *log.Logger {
 
 	return logger
 }
+
+func Noop() {
+	logger = log.Default()
+	Println = logger.Println
+	Printf = logger.Printf
+	Fatal = logger.Fatal
+	Fatalf = logger.Fatalf
+}

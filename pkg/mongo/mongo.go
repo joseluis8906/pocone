@@ -1,4 +1,4 @@
-package db
+package mongo
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/joseluis8906/pocone/pkg/log"
 	"github.com/spf13/viper"
-	"go.mongodb.org/mongo-driver/v2/mongo"
+	stdmongo "go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"go.uber.org/fx"
 )
@@ -20,42 +20,42 @@ type Deps struct {
 
 type (
 	Database struct {
-		*mongo.Database
+		*stdmongo.Database
 		CollectionFn func(name string, opts ...options.Lister[options.CollectionOptions]) *Collection
 	}
 
 	Collection struct {
-		*mongo.Collection
+		*stdmongo.Collection
 		ReplaceOneFn func(ctx context.Context, filter interface{}, replacement interface{}, opts ...options.Lister[options.ReplaceOptions]) (*UpdateResult, error)
 		FindOneFn    func(ctx context.Context, filter interface{}, opts ...options.Lister[options.FindOneOptions]) *SingleResult
 		FindFn       func(ctx context.Context, filter interface{}, opts ...options.Lister[options.FindOptions]) (*Cursor, error)
 	}
 
 	Cursor struct {
-		*mongo.Cursor
+		*stdmongo.Cursor
 		AllFn    func(ctx context.Context, results interface{}) error
 		DecodeFn func(val interface{}) error
 	}
 
 	UpdateResult struct {
-		*mongo.UpdateResult
+		*stdmongo.UpdateResult
 	}
 
 	SingleResult struct {
-		*mongo.SingleResult
+		*stdmongo.SingleResult
 	}
 )
 
-func NewSingleResult(s *mongo.SingleResult) *SingleResult {
+func NewSingleResult(s *stdmongo.SingleResult) *SingleResult {
 	return &SingleResult{s}
 }
 
-func NewUpdateResult(u *mongo.UpdateResult) *UpdateResult {
+func NewUpdateResult(u *stdmongo.UpdateResult) *UpdateResult {
 	return &UpdateResult{u}
 }
 
 func New(deps Deps) *Database {
-	client, err := mongo.Connect(options.Client().ApplyURI(deps.Config.GetString("mongo.uri")))
+	client, err := stdmongo.Connect(options.Client().ApplyURI(deps.Config.GetString("mongo.uri")))
 	if err != nil {
 		log.Fatalf("%s connecting mongo: %v", log.Error, err)
 		return nil
